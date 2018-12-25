@@ -1,4 +1,4 @@
-# CCompiler
-The goal of this project is to create a compiler of C.
+# 1cc
+This is my first C compiler.
 
 Textbook is [here](https://www.sigbus.info/compilerbook/).
