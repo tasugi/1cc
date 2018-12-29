@@ -35,6 +35,10 @@ Token tokens[100];
 // The number of tokens already parsed
 int pos = 0;
 
+Node *expr();
+Node *mul();
+Node *term();
+
 // divide a string pointed by p into tokens and preserve them in tokens
 void tokenize(char *p) {
   int i = 0;
@@ -44,7 +48,8 @@ void tokenize(char *p) {
       continue;
     }
 
-    if (*p == '+' || *p == '-' || *p == '*' || *p == '/') {
+    if (*p == '+' || *p == '-' || *p == '*' || *p == '/' ||
+        *p == '(' || *p == ')') {
       tokens[i].ty = *p;
       tokens[i].input = p;
       i++;
@@ -75,6 +80,11 @@ void error(int i) {
   exit(1);
 }
 
+void error_msg(char *msg, int i) {
+  fprintf(stderr, msg, tokens[i].input);
+  exit(1);
+}
+
 Node *new_node(int ty, Node *lhs, Node *rhs) {
   Node *node = malloc(sizeof(Node));
   node->ty = ty;
@@ -90,8 +100,24 @@ Node *new_node_num(int val) {
   return node;
 }
 
+Node *term() {
+  if (tokens[pos].ty == TK_NUM) {
+    return new_node_num(tokens[pos++].val);
+  }
+  if (tokens[pos].ty == '(') {
+    pos++;
+    Node *node = expr();  
+    if (tokens[pos].ty != ')') {
+      error_msg("開きカッコに対応する閉じカッコがありません: %s\n", pos);
+    }
+    pos++;
+    return node;
+  }
+  error_msg("数値でも開きカッコでもないトークンです: %s\n", pos);
+}
+
 Node *mul() {
-  Node *lhs = new_node_num(tokens[pos++].val);
+  Node *lhs = term();
   if (tokens[pos].ty == '*') {
     pos++;
     return new_node('*', lhs, mul());
