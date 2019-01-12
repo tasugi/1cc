@@ -145,31 +145,27 @@ Node *term() {
 }
 
 Node *mul() {
-  Node *lhs = term();
-  if (tokens[pos].ty == '*') {
-    pos++;
-    return new_node('*', lhs, mul());
+  Node *node = term();
+  for (;;) {
+    if (consume('*'))
+      node = new_node('*', node, term());
+    else if (consume('/'))
+      node = new_node('/', node, term());
+    else
+      return node;
   }
-  
-  if (tokens[pos].ty == '/') {
-    pos++;
-    return new_node('/', lhs, mul());
-  }
-  return lhs;
 }
 
 Node *add() {
-  Node *lhs = mul();
-  if (tokens[pos].ty == '+') {
-    pos++;
-    return new_node('+', lhs, add());
+  Node *node = mul();
+  for (;;) {
+    if (consume('+')) 
+      node = new_node('+', node, mul());
+    else if (consume('-'))
+      node = new_node('-', node, mul());
+    else
+      return node;
   }
-  
-  if (tokens[pos].ty == '-') {
-    pos++;
-    return new_node('-', lhs, add());
-  }
-  return lhs;
 }
 
 void gen(Node *node) {
