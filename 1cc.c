@@ -132,14 +132,11 @@ Node *term() {
   if (tokens[pos].ty == TK_NUM) {
     return new_node_num(tokens[pos++].val);
   }
-  if (tokens[pos].ty == '(') {
-    pos++;
-    Node *node = add();  
-    if (tokens[pos].ty != ')') {
-      error_msg("開きカッコに対応する閉じカッコがありません: %s\n", pos);
-    }
-    pos++;
-    return node;
+  if (consume('(')) {
+    Node *node = add();
+    if (consume(')'))
+      return node;
+    error_msg("開きカッコに対応する閉じカッコがありません: %s\n", pos);
   }
   error_msg("数値でも開きカッコでもないトークンです: %s\n", pos);
 }
