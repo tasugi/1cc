@@ -35,6 +35,11 @@ Token tokens[100];
 // The number of tokens already parsed
 int pos = 0;
 
+// Root nodes of each statement are preserved in this array. 
+Node *code[100];
+
+Node *program();
+Node *stmt();
 Node *expr();
 Node *mul();
 Node *term();
@@ -49,7 +54,7 @@ void tokenize(char *p) {
     }
 
     if (*p == '+' || *p == '-' || *p == '*' || *p == '/' ||
-        *p == '(' || *p == ')') {
+        *p == '(' || *p == ')' || *p == ';') {
       tokens[i].ty = *p;
       tokens[i].input = p;
       i++;
@@ -97,6 +102,29 @@ Node *new_node_num(int val) {
   Node *node = malloc(sizeof(Node));
   node->ty = ND_NUM;
   node->val = val;
+  return node;
+}
+
+int consume(int ty) {
+  if (tokens[pos].ty != ty)
+    return 0;
+  pos++;
+  return 1;
+}
+
+Node *program() {
+  int i = 0;
+  while (tokens[pos].ty != TK_EOF) {
+    code[i++] = stmt();
+  }
+  code[i] = NULL;
+}
+
+Node *stmt() {
+  Node *node = expr();
+  if (!consume(';')) {
+    error_msg("';'ではないトークンです", pos);
+  }
   return node;
 }
 
@@ -182,16 +210,21 @@ int main(int argc, char const *argv[])
   }
 
   tokenize(argv[1]);
-  Node *node = expr();
+  program();
 
+  // Output the preface of assembly
   printf(".intel_syntax noprefix\n");
   printf(".global main\n");
   printf("main:\n");
 
-  gen(node);
+  for (int i = 0; code[i]; i++) {
+    gen(code[i]);
 
-  // the top of stack must be a result of calculation
-  printf("  pop rax\n");
+    // There should be a result value in Stack.
+    // Pop it to avoid Stackoverflow.
+    printf("  pop rax\n");
+  }
+
   printf("  ret\n");
   return 0;
 }
