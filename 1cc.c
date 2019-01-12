@@ -40,7 +40,7 @@ Node *code[100];
 
 Node *program();
 Node *stmt();
-Node *expr();
+Node *add();
 Node *mul();
 Node *term();
 
@@ -121,7 +121,7 @@ Node *program() {
 }
 
 Node *stmt() {
-  Node *node = expr();
+  Node *node = add();
   if (!consume(';')) {
     error_msg("';'ではないトークンです", pos);
   }
@@ -134,7 +134,7 @@ Node *term() {
   }
   if (tokens[pos].ty == '(') {
     pos++;
-    Node *node = expr();  
+    Node *node = add();  
     if (tokens[pos].ty != ')') {
       error_msg("開きカッコに対応する閉じカッコがありません: %s\n", pos);
     }
@@ -158,16 +158,16 @@ Node *mul() {
   return lhs;
 }
 
-Node *expr() {
+Node *add() {
   Node *lhs = mul();
   if (tokens[pos].ty == '+') {
     pos++;
-    return new_node('+', lhs, expr());
+    return new_node('+', lhs, add());
   }
   
   if (tokens[pos].ty == '-') {
     pos++;
-    return new_node('-', lhs, expr());
+    return new_node('-', lhs, add());
   }
   return lhs;
 }
