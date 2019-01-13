@@ -1,4 +1,11 @@
-1cc: 1cc.c
+CFLAGS=-Wall -std=c11
+SRCS=$(wildcard *.c)
+OBJS=$(SRCS:.c=.o)
+
+1cc: $(OBJS)
+	$(CC) -o 1cc $(OBJS) $(LDFLAGS)
+
+$(OBJS): 1cc.h
 
 test: 1cc
 	./test.sh

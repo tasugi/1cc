@@ -2,34 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-// values representing the types of tokens
-enum {
-  TK_NUM = 256,  // integer token
-  TK_IDENT,      // Identifier
-  TK_EOF,  // end of file token
-};
-
-// type of token
-typedef struct {
-  int ty;       // type of token
-  int val;      // number if ty is TK_NUM
-  char *input;  // token string (for error message)
-} Token;
-
-enum {
-    ND_NUM = 256,  // integer node
-    ND_IDENT,      // identifier node
-};
-
-// type of node in ast
-typedef struct Node {
-  int ty;            // operator or ND_NUM
-  struct Node *lhs;  // left hand side node
-  struct Node *rhs;  // right hand side node
-  int val;           // number if ty is ND_NUM
-  char name;         // variable name if ty is ND_IDENT
-} Node;
+#include "1cc.h"
 
 // Tokenized tokens are preserved in this array.
 // It's assumed that the number of input tokens is less than 100.
@@ -40,13 +13,6 @@ int pos = 0;
 
 // Root nodes of each statement are preserved in this array. 
 Node *code[100];
-
-Node *program();
-Node *stmt();
-Node *assign();
-Node *add();
-Node *mul();
-Node *term();
 
 // divide a string pointed by p into tokens and preserve them in tokens
 void tokenize(char *p) {
