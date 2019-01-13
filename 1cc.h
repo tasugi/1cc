@@ -32,3 +32,9 @@ Node *assign();
 Node *add();
 Node *mul();
 Node *term();
+
+void gen_lval(Node *node);
+void gen(Node *node);
+
+void error(int i);
+void error_msg(char *msg, int i);
