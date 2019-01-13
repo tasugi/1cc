@@ -38,3 +38,7 @@ void gen(Node *node);
 
 void error(int i);
 void error_msg(char *msg, int i);
+
+extern int pos;
+extern Node *code[];
+extern Token tokens[];
