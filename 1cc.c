@@ -133,17 +133,15 @@ int consume(int ty) {
 
 Node *program() {
   int i = 0;
-  while (tokens[pos].ty != TK_EOF) {
+  while (tokens[pos].ty != TK_EOF)
     code[i++] = stmt();
-  }
   code[i] = NULL;
 }
 
 Node *stmt() {
   Node *node = assign();
-  if (!consume(';')) {
+  if (!consume(';'))
     error_msg("';'ではないトークンです", pos);
-  }
   return node;
 }
 
@@ -155,9 +153,8 @@ Node *assign() {
 }
 
 Node *term() {
-  if (tokens[pos].ty == TK_NUM) {
+  if (tokens[pos].ty == TK_NUM)
     return new_node_num(tokens[pos++].val);
-  }
   if (tokens[pos].ty == TK_IDENT)
     return new_node_ident(*tokens[pos++].input);
   if (consume('(')) {
