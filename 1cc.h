@@ -19,8 +19,8 @@ typedef struct Node {
   char name;         // variable name if ty is ND_IDENT
 } Node;
 
+void tokenize(char *p);
 void program();
-
 void gen(Node *node);
 
 void error(int i);
