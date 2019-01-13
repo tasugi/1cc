@@ -4,6 +4,20 @@
 #include <string.h>
 #include "1cc.h"
 
+Node *stmt();
+Node *assign();
+Node *add();
+Node *mul();
+Node *term();
+
+// values representing the types of tokens
+enum {
+  TK_NUM = 256,  // integer token
+  TK_IDENT,      // Identifier
+  TK_EOF,  // end of file token
+};
+
+
 // Tokenized tokens are preserved in this array.
 // It's assumed that the number of input tokens is less than 100.
 Token tokens[100];

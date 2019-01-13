@@ -1,10 +1,3 @@
-// values representing the types of tokens
-enum {
-  TK_NUM = 256,  // integer token
-  TK_IDENT,      // Identifier
-  TK_EOF,  // end of file token
-};
-
 // type of token
 typedef struct {
   int ty;       // type of token
@@ -27,13 +20,7 @@ typedef struct Node {
 } Node;
 
 Node *program();
-Node *stmt();
-Node *assign();
-Node *add();
-Node *mul();
-Node *term();
 
-void gen_lval(Node *node);
 void gen(Node *node);
 
 void error(int i);

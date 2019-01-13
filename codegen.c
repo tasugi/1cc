@@ -4,6 +4,8 @@
 #include <string.h>
 #include "1cc.h"
 
+void gen_lval(Node *node);
+
 void gen_lval(Node *node) {
   if (node->ty != ND_IDENT)
     error_msg("代入の左辺値が変数ではありません\n", 0);
