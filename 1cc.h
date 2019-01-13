@@ -19,7 +19,7 @@ typedef struct Node {
   char name;         // variable name if ty is ND_IDENT
 } Node;
 
-Node *program();
+void program();
 
 void gen(Node *node);
 

@@ -99,7 +99,7 @@ int consume(int ty) {
   return 1;
 }
 
-Node *program() {
+void program() {
   int i = 0;
   while (tokens[pos].ty != TK_EOF)
     code[i++] = stmt();
