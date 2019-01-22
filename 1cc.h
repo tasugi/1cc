@@ -35,3 +35,7 @@ void error_msg(char *msg, int i);
 extern int pos;
 extern Node *code[];
 extern Token tokens[];
+
+Vector *new_vector();
+void vec_push(Vector *vec, void *elem);
+void runtest();
