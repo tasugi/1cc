@@ -16,12 +16,6 @@ void error_msg(char *msg, int i) {
   exit(1);
 }
 
-typedef struct {
-  void **data;
-  int capacity;
-  int len;
-} Vector;
-
 Vector *new_vector() {
   Vector *vec = malloc(sizeof(Vector));
   vec->data = malloc(sizeof(void *) * 16);

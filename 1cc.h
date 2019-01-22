@@ -19,6 +19,12 @@ typedef struct Node {
   char name;         // variable name if ty is ND_IDENT
 } Node;
 
+typedef struct {
+  void **data;
+  int capacity;
+  int len;
+} Vector;
+
 void tokenize(char *p);
 void program();
 void gen(Node *node);
