@@ -29,7 +29,9 @@ int pos = 0;
 Node *code[100];
 
 // divide a string pointed by p into tokens and preserve them in tokens
-void tokenize(char *p) {
+void tokenize() {
+  char *p = user_input;
+
   int i = 0;
   while (*p) {
     if (isspace(*p)) {
@@ -109,7 +111,7 @@ void program() {
 Node *stmt() {
   Node *node = assign();
   if (!consume(';'))
-    error_msg("';'ではないトークンです", pos);
+    error_at(tokens[pos].input, "';'ではないトークンです");
   return node;
 }
 
@@ -129,9 +131,9 @@ Node *term() {
     Node *node = add();
     if (consume(')'))
       return node;
-    error_msg("開きカッコに対応する閉じカッコがありません: %s\n", pos);
+    error_at(tokens[pos].input, "開きカッコに対応する閉じカッコがありません");
   }
-  error_msg("数値でも開きカッコでもないトークンです: %s\n", pos);
+  error_at(tokens[pos].input, "数値でも開きカッコでもないトークンです");
 }
 
 Node *mul() {

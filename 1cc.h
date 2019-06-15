@@ -25,16 +25,17 @@ typedef struct {
   int len;
 } Vector;
 
-void tokenize(char *p);
+void tokenize();
 void program();
 void gen(Node *node);
 
-void error(int i);
-void error_msg(char *msg, int i);
+void error(char *fmt, ...);
+void error_at(char *loc, char *msg);
 
 extern int pos;
 extern Node *code[];
 extern Token tokens[];
+char *user_input;
 
 Vector *new_vector();
 void vec_push(Vector *vec, void *elem);

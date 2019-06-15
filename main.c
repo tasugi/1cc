@@ -1,18 +1,24 @@
 #include <ctype.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "1cc.h"
 
 // function to report error
-void error(int i) {
-  fprintf(stderr, "予期せぬトークンです: %s\n",
-          tokens[i].input);
+void error(char *fmt, ...) {
+  va_list ap;
+  va_start(ap, fmt);
+  vfprintf(stderr,fmt, ap);
+  fprintf(stderr, "\n");
   exit(1);
 }
 
-void error_msg(char *msg, int i) {
-  fprintf(stderr, msg, tokens[i].input);
+void error_at(char *loc, char *msg) {
+  int pos = loc - user_input;
+  fprintf(stderr, "%s\n", user_input);
+  fprintf(stderr, "%*s", pos, "");
+  fprintf(stderr, "^ %s\n", msg);
   exit(1);
 }
 
@@ -28,7 +34,9 @@ int main(int argc, char const *argv[])
     return 0;
   }
 
-  tokenize(argv[1]);
+  user_input = argv[1];
+  tokenize();
+
   program();
 
   // Output the preface of assembly

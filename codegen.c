@@ -8,7 +8,7 @@ void gen_lval(Node *node);
 
 void gen_lval(Node *node) {
   if (node->ty != ND_IDENT)
-    error_msg("代入の左辺値が変数ではありません\n", 0);
+    error_at(tokens[pos].input, "代入の左辺値が変数ではありません");
   
   int offset = ('z' - node->name + 1) * 8;
   printf("  mov rax, rbp\n");
