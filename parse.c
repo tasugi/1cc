@@ -15,6 +15,10 @@ enum {
   TK_NUM = 256,  // integer token
   TK_IDENT,      // Identifier
   TK_EOF,  // end of file token
+  TK_EQ,  // ==
+  TK_NE,  // !=
+  TK_LE,  // <=
+  TK_GE,  // >=
 };
 
 
