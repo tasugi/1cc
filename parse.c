@@ -136,13 +136,24 @@ Node *term() {
   error_at(tokens[pos].input, "数値でも開きカッコでもないトークンです");
 }
 
+Node *unary() {
+  Node *node;
+  if (consume('+'))
+    node = term();
+  else if (consume('-'))
+    node = new_node('-', new_node_num(0), term());
+  else
+    node = term();
+  return node;
+}
+
 Node *mul() {
-  Node *node = term();
+  Node *node = unary();
   for (;;) {
     if (consume('*'))
-      node = new_node('*', node, term());
+      node = new_node('*', node, unary());
     else if (consume('/'))
-      node = new_node('/', node, term());
+      node = new_node('/', node, unary());
     else
       return node;
   }
