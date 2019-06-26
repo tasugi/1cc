@@ -137,14 +137,12 @@ Node *term() {
 }
 
 Node *unary() {
-  Node *node;
   if (consume('+'))
-    node = term();
+    return term();
   else if (consume('-'))
-    node = new_node('-', new_node_num(0), term());
+    return new_node('-', new_node_num(0), term());
   else
-    node = term();
-  return node;
+    return term();
 }
 
 Node *mul() {
