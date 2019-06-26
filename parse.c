@@ -43,6 +43,38 @@ void tokenize() {
       continue;
     }
 
+    if (strncmp(p, "==",2) == 0) {
+      tokens[i].ty = TK_EQ;
+      tokens[i].input = p;
+      i++;
+      p++; p++;
+      continue;
+    }
+
+    if (strncmp(p, "!=",2) == 0) {
+      tokens[i].ty = TK_NE;
+      tokens[i].input = p;
+      i++;
+      p++; p++;
+      continue;
+    }
+
+    if (strncmp(p, ">=",2) == 0) {
+      tokens[i].ty = TK_GE;
+      tokens[i].input = p;
+      i++;
+      p++; p++;
+      continue;
+    }
+
+    if (strncmp(p, "<=",2) == 0) {
+      tokens[i].ty = TK_LE;
+      tokens[i].input = p;
+      i++;
+      p++; p++;
+      continue;
+    }
+
     if (*p == '+' || *p == '-' || *p == '*' || *p == '/' ||
         *p == '(' || *p == ')' || *p == ';' || *p == '=') {
       tokens[i].ty = *p;
