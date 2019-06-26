@@ -2,3 +2,5 @@
 *.o
 tmp*
 1cc
+
+.vscode/
