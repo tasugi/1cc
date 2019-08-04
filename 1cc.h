@@ -26,7 +26,7 @@ typedef struct {
 } Vector;
 
 void tokenize();
-void program();
+Node *stmt();
 void gen(Node *node);
 
 void error(char *fmt, ...);

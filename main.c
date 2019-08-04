@@ -36,8 +36,7 @@ int main(int argc, char const *argv[])
 
   user_input = argv[1];
   tokenize();
-
-  program();
+  Node *node = stmt();
 
   // Output the preface of assembly
   printf(".intel_syntax noprefix\n");
@@ -50,13 +49,10 @@ int main(int argc, char const *argv[])
   printf("  mov rbp, rsp\n");
   printf("  sub rsp, 208\n");
 
-  for (int i = 0; code[i]; i++) {
-    gen(code[i]);
-
-    // There should be a result value in Stack.
-    // Pop it to avoid Stackoverflow.
-    printf("  pop rax\n");
-  }
+  gen(node);
+  // There should be a result value in Stack.
+  // Pop it to avoid Stackoverflow.
+  printf("  pop rax\n");
 
   // epiloge
   // the result of the last expression is in RAX and returned

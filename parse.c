@@ -137,24 +137,8 @@ int consume(int ty) {
   return 1;
 }
 
-void program() {
-  int i = 0;
-  while (tokens[pos].ty != TK_EOF)
-    code[i++] = stmt();
-  code[i] = NULL;
-}
-
 Node *stmt() {
-  Node *node = assign();
-  if (!consume(';'))
-    error_at(tokens[pos].input, "';'ではないトークンです");
-  return node;
-}
-
-Node *assign() {
   Node *node = add();
-  if (consume('='))
-    node = new_node('=', node, assign());
   return node;
 }
 
