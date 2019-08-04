@@ -1,4 +1,5 @@
 #include <ctype.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,18 +10,6 @@ Node *assign();
 Node *add();
 Node *mul();
 Node *term();
-
-// values representing the types of tokens
-enum {
-  TK_NUM = 256,  // integer token
-  TK_IDENT,      // Identifier
-  TK_EOF,  // end of file token
-  TK_EQ,  // ==
-  TK_NE,  // !=
-  TK_LE,  // <=
-  TK_GE,  // >=
-};
-
 
 // Tokenized tokens are preserved in this array.
 // It's assumed that the number of input tokens is less than 100.
@@ -43,49 +32,9 @@ void tokenize() {
       continue;
     }
 
-    if (strncmp(p, "==",2) == 0) {
-      tokens[i].ty = TK_EQ;
-      tokens[i].input = p;
-      i++;
-      p++; p++;
-      continue;
-    }
-
-    if (strncmp(p, "!=",2) == 0) {
-      tokens[i].ty = TK_NE;
-      tokens[i].input = p;
-      i++;
-      p++; p++;
-      continue;
-    }
-
-    if (strncmp(p, ">=",2) == 0) {
-      tokens[i].ty = TK_GE;
-      tokens[i].input = p;
-      i++;
-      p++; p++;
-      continue;
-    }
-
-    if (strncmp(p, "<=",2) == 0) {
-      tokens[i].ty = TK_LE;
-      tokens[i].input = p;
-      i++;
-      p++; p++;
-      continue;
-    }
-
     if (*p == '+' || *p == '-' || *p == '*' || *p == '/' ||
         *p == '(' || *p == ')' || *p == ';' || *p == '=') {
-      tokens[i].ty = *p;
-      tokens[i].input = p;
-      i++;
-      p++;
-      continue;
-    }
-
-    if ('a' <= *p && *p <= 'z') {
-      tokens[i].ty = TK_IDENT;
+      tokens[i].kind = TK_RESERVED;
       tokens[i].input = p;
       i++;
       p++;
@@ -93,7 +42,7 @@ void tokenize() {
     }
 
     if (isdigit(*p)) {
-      tokens[i].ty = TK_NUM;
+      tokens[i].kind = TK_NUM;
       tokens[i].input = p;
       tokens[i].val = strtol(p, &p, 10);
       i++;
@@ -104,7 +53,7 @@ void tokenize() {
     exit(1);
   }
 
-  tokens[i].ty = TK_EOF;
+  tokens[i].kind = TK_EOF;
   tokens[i].input = p;
 }
 
@@ -130,11 +79,11 @@ Node *new_node_ident(char name) {
   return node;
 }
 
-int consume(int ty) {
-  if (tokens[pos].ty != ty)
-    return 0;
+bool consume(char op) {
+  if (tokens[pos].kind != TK_RESERVED || tokens[pos].input[0] != op)
+    return false;
   pos++;
-  return 1;
+  return true;
 }
 
 Node *stmt() {
@@ -143,10 +92,8 @@ Node *stmt() {
 }
 
 Node *term() {
-  if (tokens[pos].ty == TK_NUM)
+  if (tokens[pos].kind == TK_NUM)
     return new_node_num(tokens[pos++].val);
-  if (tokens[pos].ty == TK_IDENT)
-    return new_node_ident(*tokens[pos++].input);
   if (consume('(')) {
     Node *node = add();
     if (consume(')'))

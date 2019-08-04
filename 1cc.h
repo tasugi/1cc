@@ -1,9 +1,17 @@
+typedef enum {
+  TK_RESERVED,
+  TK_NUM,
+  TK_EOF,
+} TokenKind;
+
+typedef struct Token Token;
+
 // type of token
-typedef struct {
-  int ty;       // type of token
+struct Token {
+  TokenKind kind;
   int val;      // number if ty is TK_NUM
   char *input;  // token string (for error message)
-} Token;
+};
 
 enum {
     ND_NUM = 256,  // integer node
