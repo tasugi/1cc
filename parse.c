@@ -23,6 +23,7 @@ struct Token {
 
 Node *stmt();
 Node *equality();
+Node *relational();
 Node *add();
 Node *mul();
 Node *term();
@@ -56,7 +57,7 @@ Token *tokenize(char *p) {
     }
 
     if (*p == '+' || *p == '-' || *p == '*' || *p == '/' ||
-        *p == '(' || *p == ')' ) {
+        *p == '(' || *p == ')' || *p == '<') {
       cur = new_token(TK_RESERVED, cur, p++, 1);
       continue;
     }
@@ -126,12 +127,22 @@ Node *stmt() {
 
 
 Node *equality() {
-  Node *node = add();
+  Node *node = relational();
   for(;;) {
     if (consume("=="))
-      node = new_node(ND_EQ, node, equality());
+      node = new_node(ND_EQ, node, relational());
     if (consume("!="))
-      node = new_node(ND_NE, node, equality());
+      node = new_node(ND_NE, node, relational());
+    else
+      return node;
+  }
+}
+
+Node *relational(){
+  Node *node = add();
+  for(;;) {
+    if (consume("<"))
+      node = new_node(ND_LT, node, add());
     else
       return node;
   }
