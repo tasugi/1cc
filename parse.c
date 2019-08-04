@@ -43,7 +43,7 @@ Token *tokenize(char *p) {
       continue;
     }
 
-    fprintf(stderr, "トークナイズできません: %s\n", p);
+    error("トークナイズできません: %s", p);
     exit(1);
   }
 

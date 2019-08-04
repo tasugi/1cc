@@ -25,7 +25,7 @@ void error_at(char *loc, char *msg) {
 int main(int argc, char const *argv[])
 {
   if (argc != 2) {
-    fprintf(stderr, "引数の個数が正しくありません\n");
+    error("引数の個数が正しくありません");
     return 1;
   }
 
