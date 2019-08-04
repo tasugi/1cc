@@ -30,7 +30,7 @@ int main(int argc, char const *argv[])
   }
 
   user_input = argv[1];
-  tokenize();
+  token = tokenize(user_input);
   Node *node = stmt();
 
   // Output the preface of assembly

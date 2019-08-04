@@ -9,6 +9,7 @@ typedef struct Token Token;
 // type of token
 struct Token {
   TokenKind kind;
+  Token *next;
   int val;      // number if ty is TK_NUM
   char *input;  // token string (for error message)
 };
@@ -33,13 +34,12 @@ typedef struct {
   int len;
 } Vector;
 
-void tokenize();
+Token *tokenize(char *p);
 Node *stmt();
 void gen(Node *node);
 
 void error(char *fmt, ...);
 void error_at(char *loc, char *msg);
 
-extern int pos;
-extern Token tokens[];
+Token *token;
 char *user_input;

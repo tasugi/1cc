@@ -11,18 +11,20 @@ Node *add();
 Node *mul();
 Node *term();
 
-// Tokenized tokens are preserved in this array.
-// It's assumed that the number of input tokens is less than 100.
-Token tokens[100];
-
-// The number of tokens already parsed
-int pos = 0;
+Token *new_token(TokenKind kind, Token *cur, char *str) {
+  Token *tok = calloc(1, sizeof(Token));
+  tok->kind = kind;
+  tok->input = str;
+  cur->next = tok;
+  return tok;
+}
 
 // divide a string pointed by p into tokens and preserve them in tokens
-void tokenize() {
-  char *p = user_input;
+Token *tokenize(char *p) {
+  Token head;
+  head.next = NULL;
+  Token *cur = &head;
 
-  int i = 0;
   while (*p) {
     if (isspace(*p)) {
       p++;
@@ -30,19 +32,14 @@ void tokenize() {
     }
 
     if (*p == '+' || *p == '-' || *p == '*' || *p == '/' ||
-        *p == '(' || *p == ')' || *p == ';' || *p == '=') {
-      tokens[i].kind = TK_RESERVED;
-      tokens[i].input = p;
-      i++;
-      p++;
+        *p == '(' || *p == ')' ) {
+      cur = new_token(TK_RESERVED, cur, p++);
       continue;
     }
 
     if (isdigit(*p)) {
-      tokens[i].kind = TK_NUM;
-      tokens[i].input = p;
-      tokens[i].val = strtol(p, &p, 10);
-      i++;
+      cur = new_token(TK_NUM, cur, p);
+      cur->val = strtol(p, &p, 10);
       continue;
     }
 
@@ -50,8 +47,8 @@ void tokenize() {
     exit(1);
   }
 
-  tokens[i].kind = TK_EOF;
-  tokens[i].input = p;
+  new_token(TK_EOF, cur, p);
+  return head.next;
 }
 
 Node *new_node(int ty, Node *lhs, Node *rhs) {
@@ -77,9 +74,9 @@ Node *new_node_ident(char name) {
 }
 
 bool consume(char op) {
-  if (tokens[pos].kind != TK_RESERVED || tokens[pos].input[0] != op)
+  if (token->kind != TK_RESERVED || token->input[0] != op)
     return false;
-  pos++;
+  token = token->next;
   return true;
 }
 
@@ -88,16 +85,34 @@ Node *stmt() {
   return node;
 }
 
+void expect(char op) {
+  if (token->kind != TK_RESERVED || token->input[0] != op)
+    error("'%c'ではありません", op);
+  token = token->next;
+}
+
+int expect_number() {
+  if (token->kind != TK_NUM)
+    error("数ではありません");
+  int val = token->val;
+  token = token->next;
+  return val;
+}
+
+bool at_eof() {
+  return token->kind == TK_EOF;
+}
+
 Node *term() {
-  if (tokens[pos].kind == TK_NUM)
-    return new_node_num(tokens[pos++].val);
+  if (token->kind == TK_NUM)
+    return new_node_num(expect_number());
   if (consume('(')) {
     Node *node = add();
     if (consume(')'))
       return node;
-    error_at(tokens[pos].input, "開きカッコに対応する閉じカッコがありません");
+    error_at(token->input, "開きカッコに対応する閉じカッコがありません");
   }
-  error_at(tokens[pos].input, "数値でも開きカッコでもないトークンです");
+  error_at(token->input, "数値でも開きカッコでもないトークンです");
 }
 
 Node *unary() {
