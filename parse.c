@@ -18,9 +18,6 @@ Token tokens[100];
 // The number of tokens already parsed
 int pos = 0;
 
-// Root nodes of each statement are preserved in this array. 
-Node *code[100];
-
 // divide a string pointed by p into tokens and preserve them in tokens
 void tokenize() {
   char *p = user_input;

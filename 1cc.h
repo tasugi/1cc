@@ -41,10 +41,5 @@ void error(char *fmt, ...);
 void error_at(char *loc, char *msg);
 
 extern int pos;
-extern Node *code[];
 extern Token tokens[];
 char *user_input;
-
-Vector *new_vector();
-void vec_push(Vector *vec, void *elem);
-void runtest();
