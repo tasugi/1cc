@@ -17,19 +17,21 @@ struct Token {
   Token *next;
   int val;      // number if ty is TK_NUM
   char *str;  // token string (for error message)
+  int len;  // length of token
 };
 
 
 Node *stmt();
-Node *assign();
+Node *equality();
 Node *add();
 Node *mul();
 Node *term();
 
-Token *new_token(TokenKind kind, Token *cur, char *str) {
+Token *new_token(TokenKind kind, Token *cur, char *str, int len) {
   Token *tok = calloc(1, sizeof(Token));
   tok->kind = kind;
   tok->str = str;
+  tok->len = len;
   cur->next = tok;
   return tok;
 }
@@ -46,14 +48,20 @@ Token *tokenize(char *p) {
       continue;
     }
 
+    if (!strncmp(p, "==", 2)) {
+      cur = new_token(TK_RESERVED, cur, p, 2);
+      p++; p++;
+      continue;
+    }
+
     if (*p == '+' || *p == '-' || *p == '*' || *p == '/' ||
         *p == '(' || *p == ')' ) {
-      cur = new_token(TK_RESERVED, cur, p++);
+      cur = new_token(TK_RESERVED, cur, p++, 1);
       continue;
     }
 
     if (isdigit(*p)) {
-      cur = new_token(TK_NUM, cur, p);
+      cur = new_token(TK_NUM, cur, p, 1);
       cur->val = strtol(p, &p, 10);
       continue;
     }
@@ -62,7 +70,7 @@ Token *tokenize(char *p) {
     exit(1);
   }
 
-  new_token(TK_EOF, cur, p);
+  new_token(TK_EOF, cur, p, 1);
   return head.next;
 }
 
@@ -81,20 +89,24 @@ Node *new_node_num(int val) {
   return node;
 }
 
-bool consume(char op) {
-  if (token->kind != TK_RESERVED || token->str[0] != op)
+bool consume(char *op) {
+  if (token->kind != TK_RESERVED ||
+      strlen(op) != token->len ||
+      memcmp(token->str, op, token->len))
     return false;
   token = token->next;
   return true;
 }
 
 Node *stmt() {
-  Node *node = add();
+  Node *node = equality();
   return node;
 }
 
-void expect(char op) {
-  if (token->kind != TK_RESERVED || token->str[0] != op)
+void expect(char *op) {
+  if (token->kind != TK_RESERVED ||
+      strlen(op) != token->len ||
+      memcmp(token->str, op, token->len))
     error_at(token->str, "'%c'ではありません", op);
   token = token->next;
 }
@@ -111,12 +123,22 @@ bool at_eof() {
   return token->kind == TK_EOF;
 }
 
+Node *equality() {
+  Node *node = add();
+  for(;;) {
+    if (consume("=="))
+      node = new_node(ND_EQ, node, equality());
+    else
+      return node;
+  }
+}
+
 Node *term() {
   if (token->kind == TK_NUM)
     return new_node_num(expect_number());
-  if (consume('(')) {
+  if (consume("(")) {
     Node *node = add();
-    if (consume(')'))
+    if (consume(")"))
       return node;
     error_at(token->str, "開きカッコに対応する閉じカッコがありません");
   }
@@ -124,9 +146,9 @@ Node *term() {
 }
 
 Node *unary() {
-  if (consume('+'))
+  if (consume("+"))
     return term();
-  else if (consume('-'))
+  else if (consume("-"))
     return new_node(ND_SUB, new_node_num(0), term());
   else
     return term();
@@ -135,9 +157,9 @@ Node *unary() {
 Node *mul() {
   Node *node = unary();
   for (;;) {
-    if (consume('*'))
+    if (consume("*"))
       node = new_node(ND_MUL, node, unary());
-    else if (consume('/'))
+    else if (consume("/"))
       node = new_node(ND_DIV, node, unary());
     else
       return node;
@@ -147,9 +169,9 @@ Node *mul() {
 Node *add() {
   Node *node = mul();
   for (;;) {
-    if (consume('+')) 
+    if (consume("+")) 
       node = new_node(ND_ADD, node, mul());
-    else if (consume('-'))
+    else if (consume("-"))
       node = new_node(ND_SUB, node, mul());
     else
       return node;
