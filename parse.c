@@ -6,7 +6,8 @@
 #include "1cc.h"
 
 typedef enum {
-  TK_RESERVED,
+  TK_RESERVED,  // 記号
+  TK_IDENT,     // 識別子
   TK_NUM,
   TK_EOF,
 } TokenKind;
@@ -20,8 +21,10 @@ struct Token {
   int len;  // length of token
 };
 
-
+void program();
 Node *stmt();
+Node *expr();
+Node *assign();
 Node *equality();
 Node *relational();
 Node *add();
@@ -59,7 +62,7 @@ Token *tokenize(char *p) {
     }
 
     if (*p == '+' || *p == '-' || *p == '*' || *p == '/' ||
-        *p == '(' || *p == ')' || *p == '<' || *p == '>') {
+        *p == '(' || *p == ')' || *p == '<' || *p == '>' || *p == ';' || *p == '=') {
       cur = new_token(TK_RESERVED, cur, p++, 1);
       continue;
     }
@@ -67,6 +70,11 @@ Token *tokenize(char *p) {
     if (isdigit(*p)) {
       cur = new_token(TK_NUM, cur, p, 1);
       cur->val = strtol(p, &p, 10);
+      continue;
+    }
+
+    if ('a' <= *p && *p <= 'z') {
+      cur = new_token(TK_IDENT, cur, p++, 1);
       continue;
     }
 
@@ -103,6 +111,14 @@ int expect_number() {
   return val;
 }
 
+char expect_ident() {
+  if (token->kind != TK_IDENT)
+    error_at(token->str, "変数ではありません");
+  char c = token->str[0];
+  token = token->next;
+  return c;
+}
+
 bool at_eof() {
   return token->kind == TK_EOF;
 }
@@ -122,11 +138,36 @@ Node *new_node_num(int val) {
   return node;
 }
 
-Node *stmt() {
-  Node *node = equality();
+Node *new_node_ident(char c) {
+  Node *node = calloc(1, sizeof(Node));
+  node->kind = ND_LVAR;
+  node->offset = (c - 'a' + 1) *8;
   return node;
 }
 
+void program() {
+  int i = 0;
+  while (!at_eof())
+    code[i++] = stmt();
+  code[i] = NULL;
+}
+
+Node *stmt() {
+  Node *node = expr();
+  expect(";");
+  return node;
+}
+
+Node *expr() {
+  return assign();
+}
+
+Node *assign() {
+  Node *node = equality();
+  if (consume("="))
+    node = new_node(ND_ASSIGN, node, assign());
+  return node;
+}
 
 Node *equality() {
   Node *node = relational();
@@ -159,6 +200,8 @@ Node *relational(){
 Node *term() {
   if (token->kind == TK_NUM)
     return new_node_num(expect_number());
+  if (token->kind == TK_IDENT)
+    return new_node_ident(expect_ident());
   if (consume("(")) {
     Node *node = add();
     if (consume(")"))

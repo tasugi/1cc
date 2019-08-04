@@ -11,6 +11,8 @@ typedef enum {
   ND_NE,  // Not Equal
   ND_LT,  // Less than
   ND_LE,  // Less than or equal
+  ND_ASSIGN,  // =
+  ND_LVAR,    // local variable
 } NodeKind;
 
 typedef struct Node Node;
@@ -21,14 +23,15 @@ typedef struct Node {
   struct Node *lhs;  // left hand side node
   struct Node *rhs;  // right hand side node
   int val;           // number if ty is ND_NUM
-  char name;         // variable name if ty is ND_IDENT
+  int offset;         // used if kind == ND_LVAR
 };
 
 Token *tokenize(char *p);
-Node *stmt();
+void program();
 void gen(Node *node);
 
 void error(char *fmt, ...);
 void error_at(char *loc, char *fmt, ...);
 
 Token *token;
+extern Node *code[];
