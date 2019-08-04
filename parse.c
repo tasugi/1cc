@@ -51,7 +51,8 @@ Token *tokenize(char *p) {
 
     if (!strncmp(p, "==", 2) ||
         !strncmp(p, "!=", 2) ||
-        !strncmp(p, "<=", 2) ) {
+        !strncmp(p, "<=", 2) ||
+        !strncmp(p, ">=", 2) ) {
       cur = new_token(TK_RESERVED, cur, p, 2);
       p++; p++;
       continue;
@@ -148,6 +149,8 @@ Node *relational(){
       node = new_node(ND_LE, node, add());
     if (consume(">"))
       node = new_node(ND_LT, add(), node);
+    if (consume(">="))
+      node = new_node(ND_LE, add(), node);
     else
       return node;
   }
