@@ -1,4 +1,4 @@
-CFLAGS=-Wall -std=c11
+CFLAGS=-std=c11 -g -static
 SRCS=$(wildcard *.c)
 OBJS=$(SRCS:.c=.o)
 
@@ -12,3 +12,5 @@ test: 1cc
 
 clean:
 	rm -f 1cc *.o *~ tmp*
+
+.PHONY: test clean

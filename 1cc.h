@@ -1,18 +1,5 @@
-typedef enum {
-  TK_RESERVED,
-  TK_NUM,
-  TK_EOF,
-} TokenKind;
 
 typedef struct Token Token;
-
-// type of token
-struct Token {
-  TokenKind kind;
-  Token *next;
-  int val;      // number if ty is TK_NUM
-  char *str;  // token string (for error message)
-};
 
 typedef enum {
   ND_ADD,
@@ -41,4 +28,3 @@ void error(char *fmt, ...);
 void error_at(char *loc, char *fmt, ...);
 
 Token *token;
-char *user_input;

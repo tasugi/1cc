@@ -5,6 +5,8 @@
 #include <string.h>
 #include "1cc.h"
 
+char *user_input;
+
 // function to report error
 void error(char *fmt, ...) {
   va_list ap;
@@ -43,21 +45,10 @@ int main(int argc, char const *argv[])
   printf(".global main\n");
   printf("main:\n");
 
-  // prologe
-  // reserve memory for 26 variables
-  printf("  push rbp\n");
-  printf("  mov rbp, rsp\n");
-  printf("  sub rsp, 208\n");
-
   gen(node);
   // There should be a result value in Stack.
   // Pop it to avoid Stackoverflow.
   printf("  pop rax\n");
-
-  // epiloge
-  // the result of the last expression is in RAX and returned
-  printf("  mov rsp, rbp\n");
-  printf("  pop rbp\n");
   printf("  ret\n");
   return 0;
 }

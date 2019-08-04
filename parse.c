@@ -5,6 +5,21 @@
 #include <string.h>
 #include "1cc.h"
 
+typedef enum {
+  TK_RESERVED,
+  TK_NUM,
+  TK_EOF,
+} TokenKind;
+
+// type of token
+struct Token {
+  TokenKind kind;
+  Token *next;
+  int val;      // number if ty is TK_NUM
+  char *str;  // token string (for error message)
+};
+
+
 Node *stmt();
 Node *assign();
 Node *add();
