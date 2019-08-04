@@ -63,6 +63,7 @@ Token *tokenize(char *p) {
   Token head;
   head.next = NULL;
   Token *cur = &head;
+  locals = calloc(1, sizeof(LVar));
 
   while (*p) {
     if (isspace(*p)) {
@@ -228,7 +229,19 @@ Node *term() {
   if (tok) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_LVAR;
-    node->offset = (tok->str[0] - 'a' + 1) *8;
+
+    LVar *lvar = find_lvar(tok);
+    if (lvar) {
+      node->offset = lvar->offset;
+    } else {
+      lvar = calloc(1, sizeof(LVar));
+      lvar->next = locals;
+      lvar->name = tok->str;
+      lvar->len = tok->len;
+      lvar->offset = locals->offset + 8;
+      node->offset = lvar->offset;
+      locals = lvar;
+    }
     return node;
   }
   if (consume("(")) {
