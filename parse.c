@@ -58,7 +58,7 @@ Token *tokenize(char *p) {
     }
 
     if (*p == '+' || *p == '-' || *p == '*' || *p == '/' ||
-        *p == '(' || *p == ')' || *p == '<') {
+        *p == '(' || *p == ')' || *p == '<' || *p == '>') {
       cur = new_token(TK_RESERVED, cur, p++, 1);
       continue;
     }
@@ -146,6 +146,8 @@ Node *relational(){
       node = new_node(ND_LT, node, add());
     if (consume("<="))
       node = new_node(ND_LE, node, add());
+    if (consume(">"))
+      node = new_node(ND_LT, add(), node);
     else
       return node;
   }
