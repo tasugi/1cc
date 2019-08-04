@@ -8,6 +8,7 @@ typedef enum {
   ND_DIV,
   ND_NUM,
   ND_EQ,
+  ND_NE,  // Not Equal
 } NodeKind;
 
 typedef struct Node Node;

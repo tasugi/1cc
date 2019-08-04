@@ -48,7 +48,8 @@ Token *tokenize(char *p) {
       continue;
     }
 
-    if (!strncmp(p, "==", 2)) {
+    if (!strncmp(p, "==", 2) ||
+        !strncmp(p, "!=", 2) ) {
       cur = new_token(TK_RESERVED, cur, p, 2);
       p++; p++;
       continue;
@@ -129,6 +130,8 @@ Node *equality() {
   for(;;) {
     if (consume("=="))
       node = new_node(ND_EQ, node, equality());
+    if (consume("!="))
+      node = new_node(ND_NE, node, equality());
     else
       return node;
   }
