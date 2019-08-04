@@ -14,25 +14,24 @@ struct Token {
   char *str;  // token string (for error message)
 };
 
-enum {
-    ND_NUM = 256,  // integer node
-    ND_IDENT,      // identifier node
-};
+typedef enum {
+  ND_ADD,
+  ND_SUB,
+  ND_MUL,
+  ND_DIV,
+  ND_NUM,
+} NodeKind;
+
+typedef struct Node Node;
 
 // type of node in ast
 typedef struct Node {
-  int ty;            // operator or ND_NUM
+  NodeKind kind;
   struct Node *lhs;  // left hand side node
   struct Node *rhs;  // right hand side node
   int val;           // number if ty is ND_NUM
   char name;         // variable name if ty is ND_IDENT
-} Node;
-
-typedef struct {
-  void **data;
-  int capacity;
-  int len;
-} Vector;
+};
 
 Token *tokenize(char *p);
 Node *stmt();

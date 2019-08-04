@@ -51,9 +51,9 @@ Token *tokenize(char *p) {
   return head.next;
 }
 
-Node *new_node(int ty, Node *lhs, Node *rhs) {
+Node *new_node(NodeKind kind, Node *lhs, Node *rhs) {
   Node *node = malloc(sizeof(Node));
-  node->ty = ty;
+  node->kind = kind;
   node->lhs = lhs;
   node->rhs = rhs;
   return node;
@@ -61,15 +61,8 @@ Node *new_node(int ty, Node *lhs, Node *rhs) {
 
 Node *new_node_num(int val) {
   Node *node = malloc(sizeof(Node));
-  node->ty = ND_NUM;
+  node->kind = ND_NUM;
   node->val = val;
-  return node;
-}
-
-Node *new_node_ident(char name) {
-  Node *node = malloc(sizeof(Node));
-  node->ty = ND_IDENT;
-  node->name = name;
   return node;
 }
 
@@ -119,7 +112,7 @@ Node *unary() {
   if (consume('+'))
     return term();
   else if (consume('-'))
-    return new_node('-', new_node_num(0), term());
+    return new_node(ND_SUB, new_node_num(0), term());
   else
     return term();
 }
@@ -128,9 +121,9 @@ Node *mul() {
   Node *node = unary();
   for (;;) {
     if (consume('*'))
-      node = new_node('*', node, unary());
+      node = new_node(ND_MUL, node, unary());
     else if (consume('/'))
-      node = new_node('/', node, unary());
+      node = new_node(ND_DIV, node, unary());
     else
       return node;
   }
@@ -140,9 +133,9 @@ Node *add() {
   Node *node = mul();
   for (;;) {
     if (consume('+')) 
-      node = new_node('+', node, mul());
+      node = new_node(ND_ADD, node, mul());
     else if (consume('-'))
-      node = new_node('-', node, mul());
+      node = new_node(ND_SUB, node, mul());
     else
       return node;
   }
