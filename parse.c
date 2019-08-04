@@ -50,7 +50,8 @@ Token *tokenize(char *p) {
     }
 
     if (!strncmp(p, "==", 2) ||
-        !strncmp(p, "!=", 2) ) {
+        !strncmp(p, "!=", 2) ||
+        !strncmp(p, "<=", 2) ) {
       cur = new_token(TK_RESERVED, cur, p, 2);
       p++; p++;
       continue;
@@ -143,6 +144,8 @@ Node *relational(){
   for(;;) {
     if (consume("<"))
       node = new_node(ND_LT, node, add());
+    if (consume("<="))
+      node = new_node(ND_LE, node, add());
     else
       return node;
   }

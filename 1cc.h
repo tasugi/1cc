@@ -10,6 +10,7 @@ typedef enum {
   ND_EQ,
   ND_NE,  // Not Equal
   ND_LT,  // Less than
+  ND_LE,  // Less than or equal
 } NodeKind;
 
 typedef struct Node Node;
