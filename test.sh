@@ -40,5 +40,7 @@ try 1 "3 >= 3;"
 try 0 "3 >= 4;"
 try 3 "a=3; 3;"
 try 14 "a = 3; b = 5*6 - 8; a + b / 2;"
+try 6 "foo = 1; bar = 2+3; foo + bar;"
+try 3 "foo = 1; fuga = 2; foo + fuga;"
 
 echo OK

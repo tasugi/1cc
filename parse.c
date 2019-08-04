@@ -21,6 +21,24 @@ struct Token {
   int len;  // length of token
 };
 
+typedef struct LVar LVar;
+
+struct LVar{
+  LVar *next;
+  char *name;
+  int len;
+  int offset;
+};
+
+LVar *locals;
+
+LVar *find_lvar(Token *tok) {
+  for (LVar *var = locals; var; var = var->next)
+    if (var->len == tok->len && !memcmp(tok->str, var->name, var->len))
+      return var;
+  return NULL;
+}
+
 void program();
 Node *stmt();
 Node *expr();
@@ -74,7 +92,11 @@ Token *tokenize(char *p) {
     }
 
     if ('a' <= *p && *p <= 'z') {
-      cur = new_token(TK_IDENT, cur, p++, 1);
+      int len = 1;
+      while ('a' <= p[len] && p[len] <= 'z')
+        len++;
+      cur = new_token(TK_IDENT, cur, p, len);
+      p += len;
       continue;
     }
 
@@ -95,6 +117,14 @@ bool consume(char *op) {
   return true;
 }
 
+Token *consume_ident() {
+  if (token->kind != TK_IDENT)
+    return false;
+  Token *tok = token;
+  token = token->next;
+  return tok;
+}
+
 void expect(char *op) {
   if (token->kind != TK_RESERVED ||
       strlen(op) != token->len ||
@@ -111,12 +141,12 @@ int expect_number() {
   return val;
 }
 
-char expect_ident() {
+char *expect_ident() {
   if (token->kind != TK_IDENT)
     error_at(token->str, "変数ではありません");
-  char c = token->str[0];
+  char *name = token->str;
   token = token->next;
-  return c;
+  return name;
 }
 
 bool at_eof() {
@@ -138,12 +168,6 @@ Node *new_node_num(int val) {
   return node;
 }
 
-Node *new_node_ident(char c) {
-  Node *node = calloc(1, sizeof(Node));
-  node->kind = ND_LVAR;
-  node->offset = (c - 'a' + 1) *8;
-  return node;
-}
 
 void program() {
   int i = 0;
@@ -200,8 +224,13 @@ Node *relational(){
 Node *term() {
   if (token->kind == TK_NUM)
     return new_node_num(expect_number());
-  if (token->kind == TK_IDENT)
-    return new_node_ident(expect_ident());
+  Token *tok = consume_ident();
+  if (tok) {
+    Node *node = calloc(1, sizeof(Node));
+    node->kind = ND_LVAR;
+    node->offset = (tok->str[0] - 'a' + 1) *8;
+    return node;
+  }
   if (consume("(")) {
     Node *node = add();
     if (consume(")"))
