@@ -14,7 +14,7 @@ Node *term();
 Token *new_token(TokenKind kind, Token *cur, char *str) {
   Token *tok = calloc(1, sizeof(Token));
   tok->kind = kind;
-  tok->input = str;
+  tok->str = str;
   cur->next = tok;
   return tok;
 }
@@ -74,7 +74,7 @@ Node *new_node_ident(char name) {
 }
 
 bool consume(char op) {
-  if (token->kind != TK_RESERVED || token->input[0] != op)
+  if (token->kind != TK_RESERVED || token->str[0] != op)
     return false;
   token = token->next;
   return true;
@@ -86,14 +86,14 @@ Node *stmt() {
 }
 
 void expect(char op) {
-  if (token->kind != TK_RESERVED || token->input[0] != op)
-    error("'%c'ではありません", op);
+  if (token->kind != TK_RESERVED || token->str[0] != op)
+    error_at(token->str, "'%c'ではありません", op);
   token = token->next;
 }
 
 int expect_number() {
   if (token->kind != TK_NUM)
-    error("数ではありません");
+    error_at(token->str, "数ではありません");
   int val = token->val;
   token = token->next;
   return val;
@@ -110,9 +110,9 @@ Node *term() {
     Node *node = add();
     if (consume(')'))
       return node;
-    error_at(token->input, "開きカッコに対応する閉じカッコがありません");
+    error_at(token->str, "開きカッコに対応する閉じカッコがありません");
   }
-  error_at(token->input, "数値でも開きカッコでもないトークンです");
+  error_at(token->str, "数値でも開きカッコでもないトークンです");
 }
 
 Node *unary() {

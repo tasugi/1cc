@@ -14,11 +14,16 @@ void error(char *fmt, ...) {
   exit(1);
 }
 
-void error_at(char *loc, char *msg) {
+void error_at(char *loc, char *fmt, ...) {
+  va_list ap;
+  va_start(ap, fmt);
+
   int pos = loc - user_input;
   fprintf(stderr, "%s\n", user_input);
   fprintf(stderr, "%*s", pos, "");
-  fprintf(stderr, "^ %s\n", msg);
+  fprintf(stderr, "^ ");
+  vfprintf(stderr, fmt, ap);
+  fprintf(stderr, "\n");
   exit(1);
 }
 

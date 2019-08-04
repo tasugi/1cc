@@ -11,7 +11,7 @@ struct Token {
   TokenKind kind;
   Token *next;
   int val;      // number if ty is TK_NUM
-  char *input;  // token string (for error message)
+  char *str;  // token string (for error message)
 };
 
 enum {
@@ -39,7 +39,7 @@ Node *stmt();
 void gen(Node *node);
 
 void error(char *fmt, ...);
-void error_at(char *loc, char *msg);
+void error_at(char *loc, char *fmt, ...);
 
 Token *token;
 char *user_input;
