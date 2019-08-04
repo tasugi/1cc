@@ -74,21 +74,6 @@ Token *tokenize(char *p) {
   return head.next;
 }
 
-Node *new_node(NodeKind kind, Node *lhs, Node *rhs) {
-  Node *node = malloc(sizeof(Node));
-  node->kind = kind;
-  node->lhs = lhs;
-  node->rhs = rhs;
-  return node;
-}
-
-Node *new_node_num(int val) {
-  Node *node = malloc(sizeof(Node));
-  node->kind = ND_NUM;
-  node->val = val;
-  return node;
-}
-
 bool consume(char *op) {
   if (token->kind != TK_RESERVED ||
       strlen(op) != token->len ||
@@ -96,11 +81,6 @@ bool consume(char *op) {
     return false;
   token = token->next;
   return true;
-}
-
-Node *stmt() {
-  Node *node = equality();
-  return node;
 }
 
 void expect(char *op) {
@@ -122,6 +102,27 @@ int expect_number() {
 bool at_eof() {
   return token->kind == TK_EOF;
 }
+
+Node *new_node(NodeKind kind, Node *lhs, Node *rhs) {
+  Node *node = malloc(sizeof(Node));
+  node->kind = kind;
+  node->lhs = lhs;
+  node->rhs = rhs;
+  return node;
+}
+
+Node *new_node_num(int val) {
+  Node *node = malloc(sizeof(Node));
+  node->kind = ND_NUM;
+  node->val = val;
+  return node;
+}
+
+Node *stmt() {
+  Node *node = equality();
+  return node;
+}
+
 
 Node *equality() {
   Node *node = add();
