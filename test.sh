@@ -42,5 +42,6 @@ try 3 "a=3; 3;"
 try 14 "a = 3; b = 5*6 - 8; a + b / 2;"
 try 6 "foo = 1; bar = 2+3; foo + bar;"
 try 3 "foo = 1; fuga = 2; foo + fuga;"
+try 3 "return 3;"
 
 echo OK

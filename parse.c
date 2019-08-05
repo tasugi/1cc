@@ -10,6 +10,7 @@ typedef enum {
   TK_IDENT,     // 識別子
   TK_NUM,
   TK_EOF,
+  TK_RETURN,
 } TokenKind;
 
 // type of token
@@ -58,6 +59,8 @@ Token *new_token(TokenKind kind, Token *cur, char *str, int len) {
   return tok;
 }
 
+bool is_alnum(char c);
+
 // divide a string pointed by p into tokens and preserve them in tokens
 Token *tokenize(char *p) {
   Token head;
@@ -68,6 +71,12 @@ Token *tokenize(char *p) {
   while (*p) {
     if (isspace(*p)) {
       p++;
+      continue;
+    }
+
+    if (strncmp(p, "return", 6) == 0 && !is_alnum(p[6])) {
+      cur = new_token(TK_RETURN, cur, p, 6);
+      p += 6;
       continue;
     }
 
@@ -109,10 +118,25 @@ Token *tokenize(char *p) {
   return head.next;
 }
 
+bool is_alnum(char c) {
+  return ('a' <= c && c <= 'z') ||
+         ('A' <= c && c <= 'Z') ||
+         ('0' <= c && c <= '9') ||
+         (c == '_');
+}
+
+
 bool consume(char *op) {
   if (token->kind != TK_RESERVED ||
       strlen(op) != token->len ||
       memcmp(token->str, op, token->len))
+    return false;
+  token = token->next;
+  return true;
+}
+
+bool consume_token(TokenKind kind) {
+  if (token->kind != kind)
     return false;
   token = token->next;
   return true;
@@ -178,7 +202,14 @@ void program() {
 }
 
 Node *stmt() {
-  Node *node = expr();
+  Node *node;
+  if (consume_token(TK_RETURN)) {
+    node = calloc(1, sizeof(Node));
+    node->kind = ND_RETURN;
+    node->lhs = expr();
+  } else {
+    node = expr();
+  }
   expect(";");
   return node;
 }
