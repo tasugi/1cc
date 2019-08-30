@@ -9,6 +9,8 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
+    - name: chmod
+      run: chmod +x test.sh
     - name: make
       run: make
     - name: make test
