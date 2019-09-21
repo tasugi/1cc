@@ -1,13 +1,13 @@
+#include "1cc.h"
 #include <ctype.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "1cc.h"
 
 typedef enum {
-  TK_RESERVED,  // 記号
-  TK_IDENT,     // 識別子
+  TK_RESERVED, // 記号
+  TK_IDENT,    // 識別子
   TK_NUM,
   TK_EOF,
   TK_RETURN,
@@ -20,14 +20,14 @@ typedef enum {
 struct Token {
   TokenKind kind;
   Token *next;
-  int val;      // number if ty is TK_NUM
-  char *str;  // token string (for error message)
-  int len;  // length of token
+  int val;   // number if ty is TK_NUM
+  char *str; // token string (for error message)
+  int len;   // length of token
 };
 
 typedef struct LVar LVar;
 
-struct LVar{
+struct LVar {
   LVar *next;
   char *name;
   int len;
@@ -101,17 +101,16 @@ Token *tokenize(char *p) {
       continue;
     }
 
-    if (!strncmp(p, "==", 2) ||
-        !strncmp(p, "!=", 2) ||
-        !strncmp(p, "<=", 2) ||
-        !strncmp(p, ">=", 2) ) {
+    if (!strncmp(p, "==", 2) || !strncmp(p, "!=", 2) || !strncmp(p, "<=", 2) ||
+        !strncmp(p, ">=", 2)) {
       cur = new_token(TK_RESERVED, cur, p, 2);
-      p++; p++;
+      p++;
+      p++;
       continue;
     }
 
-    if (*p == '+' || *p == '-' || *p == '*' || *p == '/' ||
-        *p == '(' || *p == ')' || *p == '<' || *p == '>' || *p == ';' || *p == '=') {
+    if (*p == '+' || *p == '-' || *p == '*' || *p == '/' || *p == '(' ||
+        *p == ')' || *p == '<' || *p == '>' || *p == ';' || *p == '=') {
       cur = new_token(TK_RESERVED, cur, p++, 1);
       continue;
     }
@@ -140,16 +139,12 @@ Token *tokenize(char *p) {
 }
 
 bool is_alnum(char c) {
-  return ('a' <= c && c <= 'z') ||
-         ('A' <= c && c <= 'Z') ||
-         ('0' <= c && c <= '9') ||
-         (c == '_');
+  return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') ||
+         ('0' <= c && c <= '9') || (c == '_');
 }
 
-
 bool consume(char *op) {
-  if (token->kind != TK_RESERVED ||
-      strlen(op) != token->len ||
+  if (token->kind != TK_RESERVED || strlen(op) != token->len ||
       memcmp(token->str, op, token->len))
     return false;
   token = token->next;
@@ -172,8 +167,7 @@ Token *consume_ident() {
 }
 
 void expect(char *op) {
-  if (token->kind != TK_RESERVED ||
-      strlen(op) != token->len ||
+  if (token->kind != TK_RESERVED || strlen(op) != token->len ||
       memcmp(token->str, op, token->len))
     error_at(token->str, "'%c'ではありません", op);
   token = token->next;
@@ -195,9 +189,7 @@ char *expect_ident() {
   return name;
 }
 
-bool at_eof() {
-  return token->kind == TK_EOF;
-}
+bool at_eof() { return token->kind == TK_EOF; }
 
 Node *new_node(NodeKind kind, Node *lhs, Node *rhs) {
   Node *node = malloc(sizeof(Node));
@@ -213,7 +205,6 @@ Node *new_node_num(int val) {
   node->val = val;
   return node;
 }
-
 
 void program() {
   int i = 0;
@@ -239,7 +230,7 @@ Node *stmt() {
     expect("(");
     node->cond = expr();
     expect(")");
-    node->then = stmt(); 
+    node->then = stmt();
     if (consume_token(TK_ELSE)) {
       node->els = stmt();
     }
@@ -256,9 +247,7 @@ Node *stmt() {
   return node;
 }
 
-Node *expr() {
-  return assign();
-}
+Node *expr() { return assign(); }
 
 Node *assign() {
   Node *node = equality();
@@ -269,7 +258,7 @@ Node *assign() {
 
 Node *equality() {
   Node *node = relational();
-  for(;;) {
+  for (;;) {
     if (consume("=="))
       node = new_node(ND_EQ, node, relational());
     if (consume("!="))
@@ -279,9 +268,9 @@ Node *equality() {
   }
 }
 
-Node *relational(){
+Node *relational() {
   Node *node = add();
-  for(;;) {
+  for (;;) {
     if (consume("<"))
       node = new_node(ND_LT, node, add());
     if (consume("<="))
@@ -350,7 +339,7 @@ Node *mul() {
 Node *add() {
   Node *node = mul();
   for (;;) {
-    if (consume("+")) 
+    if (consume("+"))
       node = new_node(ND_ADD, node, mul());
     else if (consume("-"))
       node = new_node(ND_SUB, node, mul());

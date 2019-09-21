@@ -10,6 +10,9 @@ $(OBJS): 1cc.h
 test: 1cc
 	./test.sh
 
+format:
+	clang-format -i $(SRCS)
+
 clean:
 	rm -f 1cc *.o *~ tmp*
 

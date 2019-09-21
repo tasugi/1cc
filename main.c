@@ -1,9 +1,9 @@
+#include "1cc.h"
 #include <ctype.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "1cc.h"
 
 char *user_input;
 Node *code[100];
@@ -12,7 +12,7 @@ Node *code[100];
 void error(char *fmt, ...) {
   va_list ap;
   va_start(ap, fmt);
-  vfprintf(stderr,fmt, ap);
+  vfprintf(stderr, fmt, ap);
   fprintf(stderr, "\n");
   exit(1);
 }
@@ -30,8 +30,7 @@ void error_at(char *loc, char *fmt, ...) {
   exit(1);
 }
 
-int main(int argc, char const *argv[])
-{
+int main(int argc, char const *argv[]) {
   if (argc != 2) {
     error("引数の個数が正しくありません");
     return 1;
@@ -51,12 +50,12 @@ int main(int argc, char const *argv[])
   printf("  push rbp\n");
   printf("  mov rbp, rsp\n");
   printf("  sub rsp, 208\n");
-  
-  for (int i=0; code[i]; i++) {
+
+  for (int i = 0; code[i]; i++) {
     gen(code[i]);
 
-  // There should be a result value in Stack.
-  // Pop it to avoid Stackoverflow.
+    // There should be a result value in Stack.
+    // Pop it to avoid Stackoverflow.
     printf("  pop rax\n");
   }
 
