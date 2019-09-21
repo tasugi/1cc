@@ -43,5 +43,7 @@ try 14 "a = 3; b = 5*6 - 8; a + b / 2;"
 try 6 "foo = 1; bar = 2+3; foo + bar;"
 try 3 "foo = 1; fuga = 2; foo + fuga;"
 try 3 "return 3;"
+try 2 "if (1) return 2; return 3;"
+try 3 "if (0) return 2; return 3;"
 
 echo OK

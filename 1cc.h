@@ -14,6 +14,7 @@ typedef enum {
   ND_ASSIGN,  // =
   ND_LVAR,    // local variable
   ND_RETURN,  // return
+  ND_IF, // if
 } NodeKind;
 
 typedef struct Node Node;
@@ -25,6 +26,10 @@ typedef struct Node {
   struct Node *rhs;  // right hand side node
   int val;           // number if ty is ND_NUM
   int offset;         // used if kind == ND_LVAR
+
+  // if
+  struct Node *cond; // condition
+  struct Node *then; // then
 };
 
 Token *tokenize(char *p);
