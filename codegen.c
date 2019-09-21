@@ -5,6 +5,8 @@
 #include <string.h>
 #include "1cc.h"
 
+int label = 0;
+
 void gen_lval(Node *node);
 
 void gen_lval(Node *node) {
@@ -16,7 +18,7 @@ void gen_lval(Node *node) {
 }
 
 void gen(Node *node) {
-  int label = 0;
+  int l_label;
   switch (node->kind) {
     case ND_NUM:
       printf("  push %d\n", node->val);
@@ -47,30 +49,30 @@ void gen(Node *node) {
       gen(node->cond);
       printf("  pop rax\n");
       printf("  cmp rax, 0\n");
+      l_label = label++;
       if (!node->els) {
-        int tmp_label = label++;
-        printf("  je .Lend%d\n", tmp_label);
+        printf("  je .Lend%d\n", l_label);
         gen(node->then);
-        printf(".Lend%d:\n", tmp_label);
+        printf(".Lend%d:\n", l_label);
         return;
       }
-      int tmp_label = label++;
-      printf("  je .Lelse%d\n", tmp_label);
+      printf("  je .Lelse%d\n", l_label);
       gen(node->then);
-      printf("  jmp .Lend%d\n", tmp_label);
-      printf(".Lelse%d:\n", tmp_label);
+      printf("  jmp .Lend%d\n", l_label);
+      printf(".Lelse%d:\n", l_label);
       gen(node->els);
-      printf(".Lend%d:\n", tmp_label);
+      printf(".Lend%d:\n", l_label);
       return;
     case ND_WHILE:
-      printf(".Lbegin%d:\n", label);
+      l_label = label++;
+      printf(".Lbegin%d:\n", l_label);
       gen(node->cond);
       printf("  pop rax\n");
       printf("  cmp rax, 0\n");
-      printf("  je .Lend%d\n", label);
+      printf("  je .Lend%d\n", l_label);
       gen(node->body);
-      printf("  jmp .Lbegin%d\n", label);
-      printf(".Lend%d:\n", label);
+      printf("  jmp .Lbegin%d\n", l_label);
+      printf(".Lend%d:\n", l_label);
       return;
   }
 
