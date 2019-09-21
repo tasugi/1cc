@@ -13,6 +13,7 @@ typedef enum {
   TK_RETURN,
   TK_IF,
   TK_ELSE,
+  TK_WHILE,
 } TokenKind;
 
 // type of token
@@ -73,6 +74,12 @@ Token *tokenize(char *p) {
   while (*p) {
     if (isspace(*p)) {
       p++;
+      continue;
+    }
+
+    if (strncmp(p, "while", 5) == 0 && !is_alnum(p[5])) {
+      cur = new_token(TK_WHILE, cur, p, 5);
+      p += 5;
       continue;
     }
 
@@ -217,6 +224,15 @@ void program() {
 
 Node *stmt() {
   Node *node;
+  if (consume_token(TK_WHILE)) {
+    node = calloc(1, sizeof(Node));
+    node->kind = ND_WHILE;
+    expect("(");
+    node->cond = expr();
+    expect(")");
+    node->body = stmt();
+    return node;
+  }
   if (consume_token(TK_IF)) {
     node = calloc(1, sizeof(Node));
     node->kind = ND_IF;

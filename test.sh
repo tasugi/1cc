@@ -47,5 +47,7 @@ try 2 "if (1) return 2; return 3;"
 try 3 "if (0) return 2; return 3;"
 try 2 "if (1) return 2; else 3;"
 try 3 "if (0) return 2; else 3;"
+try 2 "while (1) return 2; return 3;"
+try 3 "while (0) return 2; return 3;"
 
 echo OK
