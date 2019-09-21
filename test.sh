@@ -45,5 +45,7 @@ try 3 "foo = 1; fuga = 2; foo + fuga;"
 try 3 "return 3;"
 try 2 "if (1) return 2; return 3;"
 try 3 "if (0) return 2; return 3;"
+try 2 "if (1) return 2; else 3;"
+try 3 "if (0) return 2; else 3;"
 
 echo OK

@@ -30,6 +30,7 @@ typedef struct Node {
   // if
   struct Node *cond; // condition
   struct Node *then; // then
+  struct Node *els; // else
 };
 
 Token *tokenize(char *p);
