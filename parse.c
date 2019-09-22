@@ -14,6 +14,7 @@ typedef enum {
   TK_IF,
   TK_ELSE,
   TK_WHILE,
+  TK_FOR,
 } TokenKind;
 
 // type of token
@@ -109,6 +110,8 @@ Token *tokenize(char *p) {
         cur = new_token(TK_ELSE, cur, p, len);
       } else if (len == 5 && strncmp(p, "while", len) == 0) {
         cur = new_token(TK_WHILE, cur, p, len);
+      } else if (len == 3 && strncmp(p, "for", len) == 0) {
+        cur = new_token(TK_FOR, cur, p, len);
       } else {
         cur = new_token(TK_IDENT, cur, p, len);
       }
@@ -201,6 +204,19 @@ void program() {
 
 Node *stmt() {
   Node *node;
+  if (consume_token(TK_FOR)) {
+    node = calloc(1, sizeof(Node));
+    node->kind = ND_FOR;
+    expect("(");
+    node->init = expr();
+    expect(";");
+    node->cond = expr();
+    expect(";");
+    node->inc = expr();
+    expect(")");
+    node->body = stmt();
+    return node;
+  }
   if (consume_token(TK_WHILE)) {
     node = calloc(1, sizeof(Node));
     node->kind = ND_WHILE;
