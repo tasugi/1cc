@@ -205,7 +205,14 @@ void program() {
 
 Node *stmt() {
   Node *node;
-  if (consume_token(TK_FOR)) {
+  if (consume("{")) {
+    node = new_node(ND_BLOCK, NULL, NULL);
+    int i = 0;
+    while (!consume("}")) {
+      node->stmts[i++] = stmt();
+    }
+    node->stmts[i++] = NULL;
+  } else if (consume_token(TK_FOR)) {
     node = calloc(1, sizeof(Node));
     node->kind = ND_FOR;
     expect("(");

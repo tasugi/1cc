@@ -18,6 +18,7 @@ void gen_lval(Node *node) {
 }
 
 void gen(Node *node) {
+  int i = 0;
   int l_label;
   switch (node->kind) {
   case ND_NUM:
@@ -87,6 +88,11 @@ void gen(Node *node) {
     printf("  jmp .Lbegin%d\n", l_label);
     printf(".Lend%d:\n", l_label);
     return;
+  case ND_BLOCK:
+    while (node->stmts[i]) {
+      gen(node->stmts[i++]);
+      printf("  pop rax\n");
+    }
   }
 
   gen(node->lhs);
