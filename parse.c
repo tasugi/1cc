@@ -87,7 +87,8 @@ Token *tokenize(char *p) {
     }
 
     if (*p == '+' || *p == '-' || *p == '*' || *p == '/' || *p == '(' ||
-        *p == ')' || *p == '<' || *p == '>' || *p == ';' || *p == '=') {
+        *p == ')' || *p == '<' || *p == '>' || *p == ';' || *p == '=' ||
+        *p == '{' || *p == '}') {
       cur = new_token(TK_RESERVED, cur, p++, 1);
       continue;
     }
@@ -215,18 +216,14 @@ Node *stmt() {
     node->inc = expr();
     expect(")");
     node->body = stmt();
-    return node;
-  }
-  if (consume_token(TK_WHILE)) {
+  } else if (consume_token(TK_WHILE)) {
     node = calloc(1, sizeof(Node));
     node->kind = ND_WHILE;
     expect("(");
     node->cond = expr();
     expect(")");
     node->body = stmt();
-    return node;
-  }
-  if (consume_token(TK_IF)) {
+  } else if (consume_token(TK_IF)) {
     node = calloc(1, sizeof(Node));
     node->kind = ND_IF;
     expect("(");
@@ -236,16 +233,15 @@ Node *stmt() {
     if (consume_token(TK_ELSE)) {
       node->els = stmt();
     }
-    return node;
-  }
-  if (consume_token(TK_RETURN)) {
+  } else if (consume_token(TK_RETURN)) {
     node = calloc(1, sizeof(Node));
     node->kind = ND_RETURN;
     node->lhs = expr();
+    expect(";");
   } else {
     node = expr();
+    expect(";");
   }
-  expect(";");
   return node;
 }
 
