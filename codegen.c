@@ -89,10 +89,11 @@ void gen(Node *node) {
     printf(".Lend%d:\n", l_label);
     return;
   case ND_BLOCK:
-    while (node->stmts[i]) {
+    while (node->stmts[i] != NULL) {
       gen(node->stmts[i++]);
       printf("  pop rax\n");
     }
+    return;
   }
 
   gen(node->lhs);
