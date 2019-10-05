@@ -18,6 +18,7 @@ typedef enum {
   ND_WHILE, // while
   ND_FOR, // for
   ND_BLOCK, // {}
+  ND_CALL, // function call
 } NodeKind;
 
 typedef struct Node Node;
@@ -38,6 +39,9 @@ typedef struct Node {
   struct Node *inc;  // increment: for
 
   struct Node *stmts[100]; // block
+
+  char *name[100]; // identifier name
+  struct Node *args[10]; // function call
 };
 
 Token *tokenize(char *p);

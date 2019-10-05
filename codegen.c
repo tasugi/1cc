@@ -79,6 +79,7 @@ void gen_be(Node *node) {
 void gen(Node *node) {
   int i = 0;
   int l_label;
+  char *arg[] = {"rdi", "rsi", "rdx", "rcx", "r8", "r9"};
   switch (node->kind) {
   case ND_NUM:
     printf("  push %d\n", node->val);
@@ -152,6 +153,15 @@ void gen(Node *node) {
       gen(node->stmts[i++]);
       printf("  pop rax\n");
     }
+    break;
+  case ND_CALL:
+    while (node->args[i] != NULL) {
+      gen(node->args[i]);
+      printf("  pop rax\n");
+      printf("  mov %s, rax\n", arg[i++]);
+    }
+    printf("  call %s\n", node->name);
+    printf("  push rax\n");
     break;
   default:
     gen_be(node);

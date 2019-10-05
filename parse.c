@@ -88,7 +88,7 @@ Token *tokenize(char *p) {
 
     if (*p == '+' || *p == '-' || *p == '*' || *p == '/' || *p == '(' ||
         *p == ')' || *p == '<' || *p == '>' || *p == ';' || *p == '=' ||
-        *p == '{' || *p == '}') {
+        *p == '{' || *p == '}' || *p == ',') {
       cur = new_token(TK_RESERVED, cur, p++, 1);
       continue;
     }
@@ -295,6 +295,19 @@ Node *term() {
   Token *tok = consume_ident();
   if (tok) {
     Node *node = calloc(1, sizeof(Node));
+    if (consume("(")) {
+      node->kind = ND_CALL;
+      strncpy(node->name, tok->str, tok->len);
+      if (consume(")")) {
+        return node;
+      }
+      int i=0;
+      node->args[i++] = expr();
+      while (consume(","))
+        node->args[i++] = expr();
+      expect(")");
+      return node;
+    }
     node->kind = ND_LVAR;
 
     LVar *lvar = find_lvar(tok);

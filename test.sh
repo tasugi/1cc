@@ -4,7 +4,7 @@ try() {
   input="$2"
 
   ./1cc "$input" > tmp.s
-  gcc -o tmp tmp.s
+  gcc -o tmp tmp.s tmp-foo.o tmp-plus.o
   ./tmp
   actual="$?"
 
@@ -15,6 +15,9 @@ try() {
     exit 1
   fi
 }
+
+echo 'int foo() { }' | gcc -xc -c -o tmp-foo.o -
+echo 'int plus(int x, int y) { return x + y; }' | gcc -xc -c -o tmp-plus.o -
 
 try 0 "0;"
 try 42 "42;"
@@ -51,5 +54,7 @@ try 2 "while (1) return 2; return 3;"
 try 3 "while (0) return 2; return 3;"
 try 45 "j=0; for(i=0;i<10;i=i+1) j = j+i; return j;"
 try 45 "j=0; for(i=0;i<10;i=i+1) {j = j+i;} return j;"
+try 0 "foo(); return 0;"
+try 5 "return plus(2, 3);"
 
 echo OK
