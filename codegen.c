@@ -163,6 +163,20 @@ void gen(Node *node) {
     printf("  call %s\n", node->name);
     printf("  push rax\n");
     break;
+  case ND_FUNC:
+    printf(".global %s\n", node->name);
+    printf("%s:\n", node->name);
+    // plologe
+    // reserve space for 26 vairables
+    printf("  push rbp\n");
+    printf("  mov rbp, rsp\n");
+    printf("  sub rsp, 208\n");
+    gen(node->body);
+    // epiloge
+    printf("  mov rsp, rbp\n");
+    printf("  pop rbp\n");
+    printf("  ret\n");
+    break;
   default:
     gen_be(node);
   }

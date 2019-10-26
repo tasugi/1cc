@@ -42,26 +42,8 @@ int main(int argc, char const *argv[]) {
 
   // Output the preface of assembly
   printf(".intel_syntax noprefix\n");
-  printf(".global main\n");
-  printf("main:\n");
-
-  // plologe
-  // reserve space for 26 vairables
-  printf("  push rbp\n");
-  printf("  mov rbp, rsp\n");
-  printf("  sub rsp, 208\n");
-
   for (int i = 0; code[i]; i++) {
     gen(code[i]);
-
-    // There should be a result value in Stack.
-    // Pop it to avoid Stackoverflow.
-    printf("  pop rax\n");
   }
-
-  // epiloge
-  printf("  mov rsp, rbp\n");
-  printf("  pop rbp\n");
-  printf("  ret\n");
   return 0;
 }

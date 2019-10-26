@@ -45,6 +45,7 @@ LVar *find_lvar(Token *tok) {
 }
 
 void program();
+Node *function();
 Node *stmt();
 Node *expr();
 Node *assign();
@@ -199,8 +200,19 @@ Node *new_node_num(int val) {
 void program() {
   int i = 0;
   while (!at_eof())
-    code[i++] = stmt();
+    code[i++] = function();
   code[i] = NULL;
+}
+
+Node *function() {
+  Node *node = malloc(sizeof(Node));
+  node->kind = ND_FUNC;
+  Token *tok = consume_ident();
+  strncpy(node->name, tok->str, tok->len);
+  expect("(");
+  expect(")");
+  node->body = stmt();
+  return node;
 }
 
 Node *stmt() {
@@ -301,7 +313,7 @@ Node *term() {
       if (consume(")")) {
         return node;
       }
-      int i=0;
+      int i = 0;
       node->args[i++] = expr();
       while (consume(","))
         node->args[i++] = expr();
