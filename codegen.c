@@ -171,6 +171,11 @@ void gen(Node *node) {
     printf("  push rbp\n");
     printf("  mov rbp, rsp\n");
     printf("  sub rsp, 208\n");
+    while (node->args[i] != NULL) {
+      gen_lval(node->args[i]);
+      printf("  pop rax\n");
+      printf("  mov [rax], %s\n", arg[i++]);
+    }
     gen(node->body);
     // epiloge
     printf("  mov rsp, rbp\n");

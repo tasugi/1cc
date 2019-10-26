@@ -39,5 +39,6 @@ try 2 "main() { while (1) return 2; return 3; }"
 try 45 "main() { j=0; for(i=0;i<10;i=i+1) {j = j+i;} return j; }"
 try 5 "main() { return plus(2, 3); }"
 try 2 "one() { return 1; } main() { return one() + 1; }"
+try 3 "inc(x) { return x + 1; } main() { return inc(1) + 1; }"
 
 echo OK

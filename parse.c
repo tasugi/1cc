@@ -71,7 +71,6 @@ Token *tokenize(char *p) {
   Token head;
   head.next = NULL;
   Token *cur = &head;
-  locals = calloc(1, sizeof(LVar));
 
   while (*p) {
     if (isspace(*p)) {
@@ -205,11 +204,31 @@ void program() {
 }
 
 Node *function() {
+  locals = calloc(1, sizeof(LVar));
   Node *node = malloc(sizeof(Node));
   node->kind = ND_FUNC;
   Token *tok = consume_ident();
   strncpy(node->name, tok->str, tok->len);
   expect("(");
+  if (consume(")")) {
+    node->body = stmt();
+    return node;
+  }
+  int i = 0;
+  Node *arg = malloc(sizeof(Node));
+  arg->kind = ND_LVAR;
+  tok = consume_ident();
+  strncpy(arg->name, tok->str, tok->len);
+  arg->offset = add_lvar(tok);
+  node->args[i++] = arg;
+  while (consume(",")) {
+    Node *arg = malloc(sizeof(Node));
+    arg->kind = ND_LVAR;
+    tok = consume_ident();
+    strncpy(arg->name, tok->str, tok->len);
+    node->args[i++] = arg;
+  }
+  node->args[i] = NULL;
   expect(")");
   node->body = stmt();
   return node;
@@ -301,6 +320,17 @@ Node *relational() {
   }
 }
 
+int add_lvar(Token *tok) {
+  LVar *lvar = calloc(1, sizeof(LVar));
+  lvar->next = locals;
+  lvar->name = tok->str;
+  lvar->len = tok->len;
+  lvar->offset = locals->offset + 8;
+  int offset = lvar->offset;
+  locals = lvar;
+  return offset;
+}
+
 Node *term() {
   if (token->kind == TK_NUM)
     return new_node_num(expect_number());
@@ -326,13 +356,7 @@ Node *term() {
     if (lvar) {
       node->offset = lvar->offset;
     } else {
-      lvar = calloc(1, sizeof(LVar));
-      lvar->next = locals;
-      lvar->name = tok->str;
-      lvar->len = tok->len;
-      lvar->offset = locals->offset + 8;
-      node->offset = lvar->offset;
-      locals = lvar;
+      node->offset = add_lvar(tok);
     }
     return node;
   }
